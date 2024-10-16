@@ -1,4 +1,6 @@
-interface Status extends Error {
+interface Status {
+  message?: string;
+  cause?: any;
   Ok(): boolean;
   Fail(): boolean;
   Of(cls: any): boolean;
@@ -22,7 +24,7 @@ export class Err extends Error {
   }
 }
 
-export class Ok extends Error {
+export class Ok {
   Ok() {
     return true;
   }
@@ -31,6 +33,9 @@ export class Ok extends Error {
   }
   Of(cls: any) {
     return this instanceof cls;
+  }
+  toString() {
+    return "Ok";
   }
 }
 

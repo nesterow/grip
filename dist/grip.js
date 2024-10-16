@@ -32,7 +32,7 @@ class Err extends Error {
   }
 }
 
-class Ok extends Error {
+class Ok {
   Ok() {
     return true;
   }
@@ -41,6 +41,9 @@ class Ok extends Error {
   }
   Of(cls) {
     return this instanceof cls;
+  }
+  toString() {
+    return "Ok";
   }
 }
 
