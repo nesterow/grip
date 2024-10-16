@@ -1,5 +1,5 @@
 {
-  "name": "@nesterow/follow",
+  "name": "@nesterow/grip",
   "module": "grip.ts",
   "type": "module",
   "devDependencies": {
