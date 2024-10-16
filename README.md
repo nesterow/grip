@@ -7,7 +7,7 @@ It makes the control flow similar to that of Golang, but doesn't force you to ma
 ## Install
 
 ```bash
-bun add github:nesterow/grip
+bun add github:nesterow/grip # or pnpm
 ```
 
 ## Usage
@@ -24,20 +24,20 @@ import { grip } from '@nesterow/grip';
 The result can be handled as an object: `{value, status, Ok(), Fail(), Of(type)}`
 
 ```javascript
-const fetchResult = await grip(
+const res = await grip(
   fetch('https://api.example.com')
 );
 
-if (fetchResult.Fail()) {
+if (res.Fail()) {
     handleErrorProperly();
     return;
 }
 
-const jsonResult = await grip(
+const json = await grip(
   res.value.json()
 );
 
-if (jsonResult.Of(SyntaxError)) {
+if (json.Of(SyntaxError)) {
     handleJsonParseError();
     return;
 }
@@ -49,7 +49,7 @@ if (jsonResult.Of(SyntaxError)) {
 The result can also be received as a tuple if you want to handle errors in Go'ish style:
 
 ```javascript
-const [response, fetchStatus] = await grip(
+const [res, fetchStatus] = await grip(
   fetch('https://api.example.com')
 );
 if (fetchStatus.Fail()) {
@@ -58,7 +58,7 @@ if (fetchStatus.Fail()) {
 }
 
 const [json, parseStatus] = await grip(
-  response.json()
+  res.json()
 );
 if (parseStatus.Of(SyntaxError)) {
     handleJsonParseError();
