@@ -9,7 +9,7 @@
     "typescript": "^5.0.0"
   },
   "scripts": {
-    "bundle": "bun build ./grip.ts --outdir ./dist",
+    "bundle": "bun build ./grip.ts --outfile=index.js",
     "test": "bun test"
   }
 }

@@ -66,7 +66,6 @@ const res = await grip(
 
 if (res.fail()) {
     // handle error
-    return;
 }
 
 const json = await grip(
@@ -75,7 +74,6 @@ const json = await grip(
 
 if (json.of(SyntaxError)) {
     // handle parse error
-    return;
 }
 
 ```
@@ -88,17 +86,17 @@ The result can also be received as a tuple if you want to handle errors in Go'is
 const [res, fetchStatus] = await grip(
   fetch('https://api.example.com')
 );
+
 if (fetchStatus.fail()) {
     // handle  error
-    return;
 }
 
 const [json, parseStatus] = await grip(
   res.json()
 );
+
 if (parseStatus.of(SyntaxError)) {
     // handle parse error
-    return;
 }
 ```
 
@@ -139,4 +137,5 @@ for await (let [value, status] of res.iter()) {
 ```
 
 ## License
+
 MIT
