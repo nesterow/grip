@@ -1,8 +1,12 @@
 # Grip
 
+
+[A take on Go Style Error Handling In JavaScript](https://dev.to/nesterow/a-take-on-go-style-error-handling-in-javascript-577)
+
 Simplified result/error handling for JavaScript.
 Grip always returns a consistent call result ready to be handled.
 It makes the control flow similar to that of Golang, but doesn't force you to make additional null checks or create transitional variables to hold error results.
+
 
 Instead of returning a nullish error, Grip always returns a consistent status object:
 
