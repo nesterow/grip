@@ -67,12 +67,56 @@ class Result extends Array {
   Fail() {
     return this[1].Fail();
   }
-  Of(impl) {
-    return this[1].Of(impl);
+  Of(cls) {
+    return this[1].Of(cls);
+  }
+  Iter() {
+    const value = this.value;
+    const that = this;
+    if (typeof value !== "object" && !(typeof value[Symbol.iterator] === "function" || typeof value[Symbol.asyncIterator] === "function")) {
+      return {
+        async* [Symbol.asyncIterator]() {
+          yield new Result(that.value, that.status);
+        },
+        *[Symbol.iterator]() {
+          yield new Result(that.value, that.status);
+        }
+      };
+    }
+    return {
+      async* [Symbol.asyncIterator]() {
+        yield* asyncIterator(value);
+      },
+      *[Symbol.iterator]() {
+        yield* iterator(value);
+      }
+    };
   }
 }
 var promise = (result) => {
   return result.then((res) => new Result(res, new Ok)).catch((err) => new Result(null, Err.fromCatch(err)));
+};
+var iterator = function* (iter) {
+  try {
+    let data = iter.next();
+    while (!data.done) {
+      yield new Result(data.value, new Ok);
+      data = iter.next();
+    }
+  } catch (e) {
+    yield new Result(null, Err.fromCatch(e));
+  }
+};
+var asyncIterator = async function* (iter) {
+  try {
+    let data = await iter.next();
+    while (!data.done) {
+      yield new Result(data.value, new Ok);
+      data = await iter.next();
+    }
+  } catch (e) {
+    yield new Result(null, Err.fromCatch(e));
+  }
 };
 export {
   grip,

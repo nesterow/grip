@@ -69,19 +69,51 @@ class Result<T> extends Array<T | Status> implements IResult<T> {
   Fail() {
     return (this[1] as Status).Fail();
   }
-  Of(impl: any) {
-    return (this[1] as Status).Of(impl);
+  Of(cls: any) {
+    return (this[1] as Status).Of(cls);
+  }
+  Iter() {
+    const value = this.value;
+    const that = this;
+    if (
+      typeof value !== "object" &&
+      !(
+        typeof (value as any)[Symbol.iterator] === "function" ||
+        typeof (value as any)[Symbol.asyncIterator] === "function"
+      )
+    ) {
+      return {
+        async *[Symbol.asyncIterator]() {
+          yield new Result(that.value, that.status) as SafeResult<T>;
+        },
+        *[Symbol.iterator]() {
+          yield new Result(that.value, that.status) as SafeResult<T>;
+        },
+      };
+    }
+    return {
+      async *[Symbol.asyncIterator]() {
+        yield* asyncIterator<T>(value as AsyncGenerator);
+      },
+      *[Symbol.iterator]() {
+        yield* iterator<T>(value as Generator);
+      },
+    };
   }
 }
 
 type Unwrap<T> =
-  T extends Promise<infer U>
+  T extends AsyncGenerator<infer U>
     ? U
-    : T extends (...args: any) => Promise<infer U>
+    : T extends Generator<infer U>
       ? U
-      : T extends (...args: any) => infer U
+      : T extends Promise<infer U>
         ? U
-        : T;
+        : T extends (...args: any) => Promise<infer U>
+          ? U
+          : T extends (...args: any) => infer U
+            ? U
+            : T;
 
 export type SafeResult<T> =
   T extends Promise<any>
@@ -109,4 +141,28 @@ const promise = <T>(result: Promise<T>) => {
   return result
     .then((res) => new Result(res, new Ok()))
     .catch((err) => new Result(null, Err.fromCatch(err))) as Promise<Result<T>>;
+};
+
+const iterator = function* <T>(iter: Generator) {
+  try {
+    let data = iter.next();
+    while (!data.done) {
+      yield new Result<T>(data.value as T, new Ok()) as SafeResult<T>;
+      data = iter.next();
+    }
+  } catch (e) {
+    yield new Result<T>(null as T, Err.fromCatch(e)) as SafeResult<T>;
+  }
+};
+
+const asyncIterator = async function* <T>(iter: AsyncGenerator) {
+  try {
+    let data = await iter.next();
+    while (!data.done) {
+      yield new Result<T>(data.value as T, new Ok()) as SafeResult<T>;
+      data = await iter.next();
+    }
+  } catch (e) {
+    yield new Result<T>(null as T, Err.fromCatch(e)) as SafeResult<T>;
+  }
 };

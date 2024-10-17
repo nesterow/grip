@@ -66,5 +66,41 @@ if (parseStatus.Of(SyntaxError)) {
 }
 ```
 
+## Handle functions:
+
+Grip can also handle functions:
+
+```javascript
+const [result, status] = grip(() => "ok");
+// result = "ok"
+
+const [result1, status1] = grip(() => {
+  if (1) throw new Error("error")
+});
+// result1 = null
+// status.Of(Error) = true
+```
+
+## Handle generators
+
+Generators can be handled using the `Iter()` method:
+
+```javascript
+const res = grip(async function* () {
+  for (let i = 0; i < 3; i++) {
+    if (i == 2) throw new Error("2");
+    yield i;
+  }
+});
+for await (let [value, status] of res.Iter()) {
+  if (status.Of(Error)) {
+    // handle error properly
+    break;
+  }
+  // typeof value === "number"
+  console.log(value)
+}
+```
+
 ## License
 MIT

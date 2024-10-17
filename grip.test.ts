@@ -63,3 +63,35 @@ test("fetch json", async () => {
   expect(jsonStatus.Of(SyntaxError)).toBe(true);
   expect(json === null).toBe(true);
 });
+
+test("function*", async () => {
+  const res = grip(function* () {
+    for (let i = 0; i < 3; i++) {
+      if (i == 2) throw new Error("2");
+      yield i;
+    }
+  });
+  expect(res.Ok()).toBe(true);
+  for (let [value, status] of res.Iter()) {
+    if (status.Of(Error)) {
+      break;
+    }
+    expect(value).toBeTypeOf("number");
+  }
+});
+
+test("async function*", async () => {
+  const res = grip(async function* () {
+    for (let i = 0; i < 3; i++) {
+      if (i == 2) throw new Error("2");
+      yield i;
+    }
+  });
+  expect(res.Ok()).toBe(true);
+  for await (let [value, status] of res.Iter()) {
+    if (status.Of(Error)) {
+      break;
+    }
+    expect(value).toBeTypeOf("number");
+  }
+});
