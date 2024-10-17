@@ -12,10 +12,10 @@ Instead of returning a nullish error, Grip always returns a consistent status ob
 
 ```javascript
 const [value, status] = grip(callable)
-if (status.Of(MySpecificError)) {
+if (status.of(MySpecificError)) {
   // handle specific error
 }
-if (status.Fail()) {
+if (status.fail()) {
   // handle any error
 }
 ```
@@ -24,10 +24,10 @@ The call result is better than tuple:
 
 ```javascript
 const result = grip(callable)
-if (result.Fail()) {
+if (result.fail()) {
   // handle any error
 }
-if (result.Of(MySpecificError)) {
+if (result.of(MySpecificError)) {
   // handle specific error
 }
 

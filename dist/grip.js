@@ -18,11 +18,20 @@ class Err extends Error {
   Ok() {
     return false;
   }
+  ok() {
+    return this.Ok();
+  }
   Fail() {
     return true;
   }
+  fail() {
+    return this.Fail();
+  }
   Of(cls) {
     return this.cause instanceof cls || this instanceof cls;
+  }
+  of(cls) {
+    return this.Of(cls);
   }
   static fromCatch(error) {
     const e = new Err(typeof error === "string" ? error : error.message);
@@ -36,11 +45,20 @@ class Ok {
   Ok() {
     return true;
   }
+  ok() {
+    return this.Ok();
+  }
   Fail() {
     return false;
   }
+  fail() {
+    return this.Fail();
+  }
   Of(cls) {
     return this instanceof cls;
+  }
+  of(cls) {
+    return this.Of(cls);
   }
   toString() {
     return "Ok";
@@ -64,11 +82,20 @@ class Result extends Array {
   Ok() {
     return this[1].Ok();
   }
+  ok() {
+    return this.Ok();
+  }
   Fail() {
     return this[1].Fail();
   }
+  fail() {
+    return this.Fail();
+  }
   Of(cls) {
     return this[1].Of(cls);
+  }
+  of(cls) {
+    return this.Of(cls);
   }
   Iter() {
     const value = this.value;
@@ -91,6 +118,9 @@ class Result extends Array {
         yield* iterator(value);
       }
     };
+  }
+  iter() {
+    return this.Iter();
   }
 }
 var promise = (result) => {

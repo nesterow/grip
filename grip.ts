@@ -2,19 +2,37 @@ interface Status {
   message?: string;
   cause?: any;
   Ok(): boolean;
+  /* alias Ok */
+  ok(): boolean;
   Fail(): boolean;
+  /* alias Fail */
+  fail(): boolean;
   Of(cls: any): boolean;
+  /* alias Of */
+  of(cls: any): boolean;
 }
 
 export class Err extends Error {
   Ok() {
     return false;
   }
+  /* alias Ok */
+  ok() {
+    return this.Ok();
+  }
   Fail() {
     return true;
   }
+  /* alias Fail */
+  fail() {
+    return this.Fail();
+  }
   Of(cls: any) {
     return this.cause instanceof cls || this instanceof cls;
+  }
+  /* alias Of */
+  of(cls: any) {
+    return this.Of(cls);
   }
   static fromCatch(error: any) {
     const e = new Err(typeof error === "string" ? error : error.message);
@@ -28,11 +46,23 @@ export class Ok {
   Ok() {
     return true;
   }
+  /* alias Ok */
+  ok() {
+    return this.Ok();
+  }
   Fail() {
     return false;
   }
+  /* alias Fail */
+  fail() {
+    return this.Fail();
+  }
   Of(cls: any) {
     return this instanceof cls;
+  }
+  /* alias Of */
+  of(cls: any) {
+    return this.Of(cls);
   }
   toString() {
     return "Ok";
@@ -66,11 +96,23 @@ class Result<T> extends Array<T | Status> implements IResult<T> {
   Ok() {
     return (this[1] as Status).Ok();
   }
+  /* alias Ok */
+  ok() {
+    return this.Ok();
+  }
   Fail() {
     return (this[1] as Status).Fail();
   }
+  /* alias Fail */
+  fail() {
+    return this.Fail();
+  }
   Of(cls: any) {
     return (this[1] as Status).Of(cls);
+  }
+  /* alias Of */
+  of(cls: any) {
+    return this.Of(cls);
   }
   Iter() {
     const value = this.value;
@@ -99,6 +141,10 @@ class Result<T> extends Array<T | Status> implements IResult<T> {
         yield* iterator<T>(value as Generator);
       },
     };
+  }
+  /* alias Iter */
+  iter() {
+    return this.Iter();
   }
 }
 

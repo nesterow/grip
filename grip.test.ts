@@ -49,7 +49,7 @@ test("fetch err", async () => {
   const [result, status] = await grip(fetch("https://localhost:30012"));
   expect(status.Ok()).toBe(false);
   expect(result === null).toBe(true);
-  expect(status.Of(Error)).toBe(true);
+  expect(status.of(Error)).toBe(true);
 });
 
 test("fetch json", async () => {
