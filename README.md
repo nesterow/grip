@@ -29,7 +29,7 @@ const res = await grip(
 );
 
 if (res.Fail()) {
-    handleErrorProperly();
+    // handle error
     return;
 }
 
@@ -38,7 +38,7 @@ const json = await grip(
 );
 
 if (json.Of(SyntaxError)) {
-    handleJsonParseError();
+    // handle parse error
     return;
 }
 
@@ -53,7 +53,7 @@ const [res, fetchStatus] = await grip(
   fetch('https://api.example.com')
 );
 if (fetchStatus.Fail()) {
-    handleErrorProperly();
+    // handle  error
     return;
 }
 
@@ -61,7 +61,7 @@ const [json, parseStatus] = await grip(
   res.json()
 );
 if (parseStatus.Of(SyntaxError)) {
-    handleJsonParseError();
+    // handle parse error
     return;
 }
 ```
