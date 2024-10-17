@@ -4,6 +4,34 @@ Simplified result/error handling for JavaScript.
 Grip always returns a consistent call result ready to be handled.
 It makes the control flow similar to that of Golang, but doesn't force you to make additional null checks or create transitional variables to hold error results.
 
+Instead of returning an nullish Error, Grip always returns a Status object:
+
+```javascript
+const [value, status] = grip(callable)
+if (status.Fail()) {
+  // handle any error
+}
+if (status.Of(MySpecificError)) {
+  // handle specific error
+}
+```
+
+The call result is better than tuple:
+
+```javascript
+const result = grip(callable)
+if (result.Fail()) {
+  // handle any error
+}
+if (result.Of(MySpecificError)) {
+  // handle specific error
+}
+
+console.log(result.value) // result[0]
+```
+
+Grip also works with Promises, functions that return promises, generators and async generators.
+
 ## Install
 
 ```bash
