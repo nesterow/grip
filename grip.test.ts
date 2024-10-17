@@ -89,7 +89,7 @@ test("async function*", async () => {
   });
   expect(res.Ok()).toBe(true);
   for await (let [value, status] of res.Iter()) {
-    if (status.Of(Error)) {
+    if (status.of(Error)) {
       break;
     }
     expect(value).toBeTypeOf("number");

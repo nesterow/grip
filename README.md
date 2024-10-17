@@ -11,10 +11,12 @@ It makes the control flow similar to that of Golang, but doesn't force you to ma
 Instead of returning a nullish error, Grip always returns a consistent status object:
 
 ```javascript
-const [value, status] = grip(callable)
+const [value, status] = grip(callable) // or {value, status}
+
 if (status.of(MySpecificError)) {
   // handle specific error
 }
+
 if (status.fail()) {
   // handle any error
 }
@@ -24,11 +26,13 @@ The call result is better than tuple:
 
 ```javascript
 const result = grip(callable)
-if (result.fail()) {
-  // handle any error
-}
+
 if (result.of(MySpecificError)) {
   // handle specific error
+}
+
+if (result.fail()) {
+  // handle any error
 }
 
 console.log(result.value) // result[0]
@@ -51,7 +55,7 @@ The result can be hadled as either an object or a tuple.
 import { grip } from '@nesterow/grip';
 ```
 
-## Handle result as an object:
+## Handle result as an object
 
 The result can be handled as an object: `{value, status, Ok(), Fail(), Of(type)}`
 
@@ -60,7 +64,7 @@ const res = await grip(
   fetch('https://api.example.com')
 );
 
-if (res.Fail()) {
+if (res.fail()) {
     // handle error
     return;
 }
@@ -69,14 +73,14 @@ const json = await grip(
   res.value.json()
 );
 
-if (json.Of(SyntaxError)) {
+if (json.of(SyntaxError)) {
     // handle parse error
     return;
 }
 
 ```
 
-## Handle result as a tuple:
+## Handle result as a tuple
 
 The result can also be received as a tuple if you want to handle errors in Go'ish style:
 
@@ -84,7 +88,7 @@ The result can also be received as a tuple if you want to handle errors in Go'is
 const [res, fetchStatus] = await grip(
   fetch('https://api.example.com')
 );
-if (fetchStatus.Fail()) {
+if (fetchStatus.fail()) {
     // handle  error
     return;
 }
@@ -92,13 +96,13 @@ if (fetchStatus.Fail()) {
 const [json, parseStatus] = await grip(
   res.json()
 );
-if (parseStatus.Of(SyntaxError)) {
+if (parseStatus.of(SyntaxError)) {
     // handle parse error
     return;
 }
 ```
 
-## Handle functions:
+## Handle functions
 
 Grip can also handle functions:
 
@@ -124,8 +128,8 @@ const res = grip(async function* () {
     yield i;
   }
 });
-for await (let [value, status] of res.Iter()) {
-  if (status.Of(Error)) {
+for await (let [value, status] of res.iter()) {
+  if (status.of(Error)) {
     // handle error properly
     break;
   }

@@ -2,13 +2,10 @@ interface Status {
   message?: string;
   cause?: any;
   Ok(): boolean;
-  /* alias Ok */
   ok(): boolean;
   Fail(): boolean;
-  /* alias Fail */
   fail(): boolean;
   Of(cls: any): boolean;
-  /* alias Of */
   of(cls: any): boolean;
 }
 
@@ -16,21 +13,18 @@ export class Err extends Error {
   Ok() {
     return false;
   }
-  /* alias Ok */
   ok() {
     return this.Ok();
   }
   Fail() {
     return true;
   }
-  /* alias Fail */
   fail() {
     return this.Fail();
   }
   Of(cls: any) {
     return this.cause instanceof cls || this instanceof cls;
   }
-  /* alias Of */
   of(cls: any) {
     return this.Of(cls);
   }
@@ -46,21 +40,18 @@ export class Ok {
   Ok() {
     return true;
   }
-  /* alias Ok */
   ok() {
     return this.Ok();
   }
   Fail() {
     return false;
   }
-  /* alias Fail */
   fail() {
     return this.Fail();
   }
   Of(cls: any) {
     return this instanceof cls;
   }
-  /* alias Of */
   of(cls: any) {
     return this.Of(cls);
   }
@@ -96,21 +87,18 @@ class Result<T> extends Array<T | Status> implements IResult<T> {
   Ok() {
     return (this[1] as Status).Ok();
   }
-  /* alias Ok */
   ok() {
     return this.Ok();
   }
   Fail() {
     return (this[1] as Status).Fail();
   }
-  /* alias Fail */
   fail() {
     return this.Fail();
   }
   Of(cls: any) {
     return (this[1] as Status).Of(cls);
   }
-  /* alias Of */
   of(cls: any) {
     return this.Of(cls);
   }
@@ -142,7 +130,6 @@ class Result<T> extends Array<T | Status> implements IResult<T> {
       },
     };
   }
-  /* alias Iter */
   iter() {
     return this.Iter();
   }
@@ -168,7 +155,7 @@ export type SafeResult<T> =
       ? Promise<Result<Unwrap<T>>>
       : Result<Unwrap<T>>;
 
-export function grip<T>(action: T): SafeResult<T> {
+export function grip<T>(action: T) {
   if (action instanceof Promise) {
     return promise<T>(action) as SafeResult<T>;
   }
@@ -179,14 +166,19 @@ export function grip<T>(action: T): SafeResult<T> {
     }
     return new Result<T>(result, new Ok()) as SafeResult<T>;
   } catch (err: any) {
-    return new Result<T>(null as any, Err.fromCatch(err)) as SafeResult<T>;
+    return new Result<T>(
+      null as never,
+      Err.fromCatch(err),
+    ) as SafeResult<never>;
   }
 }
 
-const promise = <T>(result: Promise<T>) => {
-  return result
-    .then((res) => new Result(res, new Ok()))
-    .catch((err) => new Result(null, Err.fromCatch(err))) as Promise<Result<T>>;
+const promise = async <T>(result: Promise<T>) => {
+  try {
+    return new Result(await result, new Ok());
+  } catch (err) {
+    return new Result<never>(null as never, Err.fromCatch(err));
+  }
 };
 
 const iterator = function* <T>(iter: Generator) {
@@ -197,7 +189,7 @@ const iterator = function* <T>(iter: Generator) {
       data = iter.next();
     }
   } catch (e) {
-    yield new Result<T>(null as T, Err.fromCatch(e)) as SafeResult<T>;
+    yield new Result<T>(null as never, Err.fromCatch(e)) as SafeResult<never>;
   }
 };
 
@@ -209,6 +201,6 @@ const asyncIterator = async function* <T>(iter: AsyncGenerator) {
       data = await iter.next();
     }
   } catch (e) {
-    yield new Result<T>(null as T, Err.fromCatch(e)) as SafeResult<T>;
+    yield new Result<T>(null as T, Err.fromCatch(e)) as SafeResult<never>;
   }
 };

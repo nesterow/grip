@@ -123,8 +123,12 @@ class Result extends Array {
     return this.Iter();
   }
 }
-var promise = (result) => {
-  return result.then((res) => new Result(res, new Ok)).catch((err) => new Result(null, Err.fromCatch(err)));
+var promise = async (result) => {
+  try {
+    return new Result(await result, new Ok);
+  } catch (err) {
+    return new Result(null, Err.fromCatch(err));
+  }
 };
 var iterator = function* (iter) {
   try {
