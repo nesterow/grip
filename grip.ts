@@ -1,6 +1,6 @@
 interface Status {
   message?: string;
-  cause?: any;
+  cause?: unknown;
   Ok(): boolean;
   ok(): boolean;
   Fail(): boolean;
@@ -13,25 +13,25 @@ interface Status {
  * Error result
  */
 export class Err extends Error {
-  Ok() {
+  Ok(): boolean {
     return false;
   }
-  ok() {
+  ok(): boolean {
     return this.Ok();
   }
-  Fail() {
+  Fail(): boolean {
     return true;
   }
-  fail() {
+  fail(): boolean {
     return this.Fail();
   }
-  Of(cls: any) {
+  Of(cls: any): boolean {
     return this.cause instanceof cls || this instanceof cls;
   }
-  of(cls: any) {
+  of(cls: any): boolean {
     return this.Of(cls);
   }
-  static fromCatch(error: any) {
+  static fromCatch(error: any): Error {
     const e = new Err(typeof error === "string" ? error : error.message);
     e.cause = error;
     e.stack = error.stack;
@@ -43,25 +43,25 @@ export class Err extends Error {
  * Successful result
  */
 export class Ok {
-  Ok() {
+  Ok(): boolean {
     return true;
   }
-  ok() {
+  ok(): boolean {
     return this.Ok();
   }
-  Fail() {
+  Fail(): boolean {
     return false;
   }
-  fail() {
+  fail(): boolean {
     return this.Fail();
   }
-  Of(cls: any) {
+  Of(cls: any): boolean {
     return this instanceof cls;
   }
-  of(cls: any) {
+  of(cls: any): boolean {
     return this.Of(cls);
   }
-  toString() {
+  toString(): string {
     return "Ok";
   }
 }
@@ -76,6 +76,15 @@ interface IResult<T> {
   Fail(): boolean;
 }
 
+type IterResult<T> = {
+  [Symbol.asyncIterator](): AsyncGenerator<
+    Awaited<SafeResult<T>>,
+    void,
+    unknown
+  >;
+  [Symbol.iterator](): Generator<SafeResult<T>, void, unknown>;
+};
+
 class Result<T> extends Array<T | Status> implements IResult<T> {
   0: T;
   1: Status;
@@ -84,31 +93,31 @@ class Result<T> extends Array<T | Status> implements IResult<T> {
     this[0] = result;
     this[1] = status;
   }
-  get value() {
+  get value(): T {
     return this[0];
   }
-  get status() {
+  get status(): Status {
     return this[1];
   }
-  Ok() {
+  Ok(): boolean {
     return (this[1] as Status).Ok();
   }
-  ok() {
+  ok(): boolean {
     return this.Ok();
   }
-  Fail() {
+  Fail(): boolean {
     return (this[1] as Status).Fail();
   }
-  fail() {
+  fail(): boolean {
     return this.Fail();
   }
-  Of(cls: any) {
+  Of(cls: any): boolean {
     return (this[1] as Status).Of(cls);
   }
-  of(cls: any) {
+  of(cls: any): boolean {
     return this.Of(cls);
   }
-  Iter() {
+  Iter(): IterResult<T> {
     const value = this.value;
     const that = this;
     if (
@@ -136,7 +145,7 @@ class Result<T> extends Array<T | Status> implements IResult<T> {
       },
     };
   }
-  iter() {
+  iter(): IterResult<T> {
     return this.Iter();
   }
 }
@@ -183,8 +192,8 @@ export function grip<T>(action: T): SafeResult<T> {
     if (result instanceof Promise) {
       return promise<T>(result) as SafeResult<T>;
     }
-    return new Result<T>(result, new Ok()) as SafeResult<T>;
-  } catch (err: any) {
+    return new Result<T>(result as T, new Ok()) as SafeResult<T>;
+  } catch (err) {
     return new Result<T>(
       null as never,
       Err.fromCatch(err),

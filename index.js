@@ -1,19 +1,4 @@
 // grip.ts
-function grip(action) {
-  if (action instanceof Promise) {
-    return promise(action);
-  }
-  try {
-    const result = action();
-    if (result instanceof Promise) {
-      return promise(result);
-    }
-    return new Result(result, new Ok);
-  } catch (err) {
-    return new Result(null, Err.fromCatch(err));
-  }
-}
-
 class Err extends Error {
   Ok() {
     return false;
@@ -121,6 +106,20 @@ class Result extends Array {
   }
   iter() {
     return this.Iter();
+  }
+}
+function grip(action) {
+  if (action instanceof Promise) {
+    return promise(action);
+  }
+  try {
+    const result = action();
+    if (result instanceof Promise) {
+      return promise(result);
+    }
+    return new Result(result, new Ok);
+  } catch (err) {
+    return new Result(null, Err.fromCatch(err));
   }
 }
 var promise = async (result) => {
