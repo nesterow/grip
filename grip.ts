@@ -31,7 +31,7 @@ export class Err extends Error {
   of(cls: any): boolean {
     return this.Of(cls);
   }
-  static fromCatch(error: any): Error {
+  static fromCatch(error: any): Status {
     const e = new Err(typeof error === "string" ? error : error.message);
     e.cause = error;
     e.stack = error.stack;
