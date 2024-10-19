@@ -1,4 +1,9 @@
 {
+  "version": "0.0.1",
+  "author": {
+    "name": "Anton Nesterov",
+    "url": "https://github.com/nesterow"
+  },
   "name": "@nesterow/grip",
   "module": "grip.ts",
   "type": "module",
