@@ -9,6 +9,9 @@ interface Status {
   of(cls: any): boolean;
 }
 
+/**
+ * Error result
+ */
 export class Err extends Error {
   Ok() {
     return false;
@@ -36,6 +39,9 @@ export class Err extends Error {
   }
 }
 
+/**
+ * Successful result
+ */
 export class Ok {
   Ok() {
     return true;
@@ -148,14 +154,27 @@ type Unwrap<T> =
             ? U
             : T;
 
-export type SafeResult<T> =
+type SafeResult<T> =
   T extends Promise<any>
     ? Promise<Result<Unwrap<T>>>
     : T extends () => Promise<any>
       ? Promise<Result<Unwrap<T>>>
       : Result<Unwrap<T>>;
 
-export function grip<T>(action: T) {
+/**
+ * Grip wraps functions, promises or generators and returns it as a result.
+ * The result can be handled as an object { value, status }, or as a tuple [value, object].
+ * The result and status interfaces have the methods `ok(), fail(), of(Error)` to check the status:
+ *
+ * ```javascript
+ * const json = grip(response.body.joson())
+ * if (json.of(SyntaxError)) {
+ *  // handle parse error
+ * }
+ * // handle json.value
+ * ```
+ */
+export function grip<T>(action: T): SafeResult<T> {
   if (action instanceof Promise) {
     return promise<T>(action) as SafeResult<T>;
   }
