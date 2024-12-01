@@ -10,7 +10,7 @@ It makes the control flow similar to that of Golang, but doesn't force you to ma
 > Grip doesn't force you to write code in a specific style or avoid using throw. It is just a helper that unwraps try-catch. 
 
 
-Instead of returning a nullish error, Grip always returns a consistent status interface:
+Instead of returning a nullish error, Grip always returns a consistent result interface:
 
 ```javascript
 const [value, status] = grip(callable) // or {value, status}
