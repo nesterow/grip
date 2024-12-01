@@ -7,8 +7,10 @@ Simplified result/error handling for JavaScript.
 Grip always returns a consistent call result ready to be handled.
 It makes the control flow similar to that of Golang, but doesn't force you to make additional null checks or create transitional variables to hold error results.
 
+> Grip doesn't force you to write code in a specific style or avoid using throw. It is just a helper that unwraps try-catch. 
 
-Instead of returning a nullish error, Grip always returns a consistent status object:
+
+Instead of returning a nullish error, Grip always returns a consistent status interface:
 
 ```javascript
 const [value, status] = grip(callable) // or {value, status}
@@ -117,7 +119,7 @@ const [result1, status1] = grip(() => {
 
 ## Handle generators
 
-Generators can be handled using the `Iter()` method:
+Generators can be handled using the `iter()` method:
 
 ```javascript
 const res = grip(async function* () {
